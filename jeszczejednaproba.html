@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8" />
+    <title>Kalkulator BMI</title>
+  </head>
+
+    <style>
+      body {
+        background: white;
+      }
+
+      h1 {
+        font-size: 60px;
+      }
+
+      ul {
+        display: flex;
+        list-style-type: none;
+      }
+
+      li {
+        font-size: 18px;
+        padding: 15px;
+        margin: 12px;
+        border: 1px solid;
+        width: 500px;
+        height: auto;
+        display: block;
+      }
+    </style>
+
+<body>
+    <h1>Kalkulator BMI</h3>
+
+    <div class="kontener">
+        <ul>
+            <li>
+                <p><label for="waga">Waga:</label>
+                <input id="waga" style="float: right;" size="30"></p>   
+                <p><label for="waga">Wzrost:</label>
+                <input id="wzrost" style="float: right;" size="30"></p>
+                <button onclick="zatwierdz()">Zatwierdź</button>
+            </li>
+            <li>
+                <div><p id="wagawynik">Waga:</p></div>
+                <div><p id="wzrostwynik">Wzrost:</p></div>
+                <div><p id="bmiwynik"></p></div>
+                <div><p id="roznica"></p></div>
+            </li>
+            <li>
+                <p>Historia wpisów:</p>
+                <div class="historia"><p id="historia"></p></div><br>
+                <div><p id="srednia">Średnia BMI:</p></div>
+                <form><button id="clear" type="submit">Czyść historię</button></form>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        let wyniki = [];
+        let licznik = 0;
+
+        function zatwierdz() {
+            let wagaKg = document.querySelector("#waga");
+            let wzrostCm = document.querySelector("#wzrost");
+            let roznicaRr = document.querySelector("#roznica");
+
+            let waga = wagaKg.value;
+            let wzrost = wzrostCm.value;
+
+            if (isNaN(waga) || waga <= 39 || waga >= 201) {
+                roznicaRr.innerHTML = "Waga nie jest poprawna";
+                roznicaRr.style.color = "red";
+                return;
+            }
+
+            if (isNaN(wzrost) || wzrost <= 119 || wzrost >= 241) {
+                roznicaRr.innerHTML = "Wzrost nie jest poprawny";
+                roznicaRr.style.color = "red";
+
+                return;
+            }
+
+            let bmi = obliczBmi(wzrost, waga);
+            roznicaRr.innerHTML = "";
+            if (wyniki.length > 0)
+            porownajWynik(bmi);
+            pokazWynik(wzrost, waga, bmi);
+            zapiszWynik(wzrost, waga, bmi);
+            obliczSrednia();
+            wzrostCm.value = "";
+            wagaKg.value = "";
+
+            document.getElementById("bmiwynik").style.fontSize = "x-large";
+            // bmiwynik.style.fontSize = "25px";
+        }
+
+        function zapiszWynik(wzrost, waga, bmi) {
+        
+            let wynik = {
+                wzrost: wzrost,
+                waga: waga,
+                bmi: bmi,
+                data: new Date().toLocaleString()
+            }
+            wyniki.push(wynik);
+
+            let kontenerElement = document.querySelector(".historia");
+            licznik = licznik + 1;
+            let nowyDiv = document.createElement("div");
+            let nowyPrzycisk = document.createElement("button");
+            nowyDiv.innerHTML = "Pomiar #" + licznik + ' ' + " z " + wynik.data;
+            kontenerElement.appendChild(nowyDiv);
+
+            nowyDiv.addEventListener("click", function () {
+                let roznicaRr = document.querySelector("#roznica");
+                roznicaRr.innerHTML = "";
+                pokazWynik(wzrost, waga, bmi);
+            });
+        }
+
+        function obliczBmi(wzrost, waga) {
+            let bmi = parseInt(waga) / (parseInt(wzrost) / 100) ** 2
+            bmi = bmi.toFixed(2)
+            bmi = parseFloat(bmi)
+            return bmi;
+        }
+
+        function porownajWynik(bmi) {
+            let roznicaRr = document.querySelector("#roznica");
+            let ostatniWynik = wyniki[wyniki.length - 1];
+            if (bmi > ostatniWynik.bmi) {
+                roznicaRr.innerHTML = "Twoje BMI wzrosło!";
+                roznicaRr.style.color = "red";
+            } else if (bmi < ostatniWynik.bmi) {
+                roznicaRr.innerHTML = "Twoje BMI spadło!";
+                roznicaRr.style.color = "red";
+            }
+        }
+
+        function obliczSrednia() {
+            let sredniaAvg = document.querySelector("#srednia");
+            let suma = 0;
+
+            for (let n = 0; n < wyniki.length; n++) {
+                suma = suma + wyniki[n].bmi;
+            }
+
+            let srednia = parseFloat(suma) / [wyniki.length]
+            srednia = srednia.toFixed(2)
+            sredniaAvg.innerHTML = "Średnia BMI: " + srednia;
+
+        }
+        function pokazWynik(wzrost, waga, bmi) {
+            let bmiWynikSm = document.querySelector("#bmiwynik");
+            let wagaWynikKg = document.querySelector("#wagawynik");
+            let wzrostWynikCm = document.querySelector("#wzrostwynik");
+
+            wagaWynikKg.innerHTML = "Waga: " + waga;
+            wagaWynikKg.style.color = "green";
+            wzrostWynikCm.innerHTML = "Wzrost: " + wzrost;
+            wzrostWynikCm.style.color = "green";
+            bmiWynikSm.innerHTML = "Wyliczone BMI: " + bmi;
+        }
+
+    </script>
+</body>
+
+</html>
